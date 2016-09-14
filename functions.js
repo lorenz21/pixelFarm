@@ -137,3 +137,8 @@ function newUserValidate(){
   }
 
 }
+
+//function to upload photo files
+function uploadPhoto() {
+
+}
