@@ -1,4 +1,5 @@
 //function to display market data
+/*
 $(function(){
   var $markets = $('#markets');
   $.ajax({
@@ -16,24 +17,27 @@ $(function(){
       });
     }
   });
-});
-//Query to collect market information from cloudboost
+});*/
 $(document).ready(function() {
-//var vendors = new CB.CloudObject('Vendor');
+var $markets = $('#markets');
 var query = new CB.CloudQuery('Market');
 query.setLimit(62);
 query.equalTo('island', 'Oahu');
 query.find({
     success : function(list){
         for(x = 0; x < list.length; x++){
-            console.log(list[x].document.name);
+          console.log(list[x].document);
+          $markets.append('<li> <a href="#">'+'<h2>'
+          + list[x].document.name +'</h2>'+ '<p>' +'Island: '+ list[x].document.island + '<br>Time: ' + list[x].document.time
+          +'<br>Phone: '+ list[x].document.phone +'</p></a></li>');
+          $('#markets').listview().listview('refresh');
+            //console.log(list[0].document.name);
         }//list is an array of CloudObjects
-        console.log(list);
+
     },error : function(error){
         //error
     }
 });
-
 });
 //map function
 $(document).ready(function() {
