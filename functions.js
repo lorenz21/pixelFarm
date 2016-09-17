@@ -40,6 +40,7 @@ query.find({
 });
 });
 //map function
+/*
 $(document).ready(function() {
   var locations = [
     ['Ewa Beach', 21.419100, -157.962173],
@@ -69,8 +70,11 @@ $(document).ready(function() {
       }
     })(marker, i));
   }
-});
+});  */ //END OLD MAP Function
 //function to reset password
+
+
+
 function resetBtn(){
 
   var email = document.getElementById("email").value;
