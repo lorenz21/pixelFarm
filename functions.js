@@ -139,6 +139,31 @@ function newUserValidate(){
 }
 
 //function to upload photo files
-function uploadPhoto() {
+//reference link: https://tutorials.cloudboost.io/en/datastorage/files
+function uploadPhoto(fileName, photo) {
+	saveLocalPhoto();
+}
 
+//test saving a file from the local system
+function saveLocalPhoto(){
+	var fileUploadControl = $("#photo")[0];
+	console.log(`fileUploadControl is ${fileUploadControl}`);
+	if (fileUploadControl.files.length > 0) {
+	  var file = fileUploadControl.files[0];
+	  var name = "localSystemPhoto.png";
+	  var cloudFile = new CB.CloudFile(file);
+	  cloudFile.set('name',name);
+	  cloudFile.save({
+		success : function(cloudFile){
+			console.log("successfully saved?");
+		  console.log(cloudFile.URL);
+		}, error: function(error){
+		  //error
+		  console.log("upload error");
+		}, uploadProgress : function(percentComplete){
+			//upload progress.
+			console.log("file upload progress");
+		}
+	  })
+	}
 }
