@@ -83,7 +83,7 @@ $(document).ready(function() {
 function initMap() {
   var map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 21.4354327, lng: -158.0365637},
-    zoom: 6
+    zoom: 11
   });
   var infoWindow = new google.maps.InfoWindow({map: map});
 
