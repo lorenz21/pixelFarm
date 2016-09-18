@@ -1,23 +1,3 @@
-//function to display market data
-/*
-$(function(){
-  var $markets = $('#markets');
-  $.ajax({
-    type: 'GET',
-    url: 'https://data.hawaii.gov/resource/b2y9-ab7v.json',
-    dataType: 'json',
-    success: function(data) {
-      $.each(data, function(i, market) {
-        if(i <= 8){
-          $markets.append('<li><a href="#"><img src="http://famouswonders.com/wp-content/uploads/2010/01/Otavalo-Market.jpg" height="50" width="50">Farmers Market: '+'<h2>'
-          + market.farmer_s_market +'</h2>'+ '<p>' +'Island: '+ market.island + 'Location: ' + market.location_1_location + 'State: ' + market. location_1_state +
-          'Information: ' + market.location_info +'Phone: '+market.phone+ 'Time: '+market.time +'</p></a></li>');
-          $('#markets').listview().listview('refresh');
-        }
-      });
-    }
-  });
-});*/
 $(document).ready(function() {
 var $markets = $('#markets');
 var query = new CB.CloudQuery('Market');
@@ -26,9 +6,10 @@ query.equalTo('island', 'Oahu');
 query.find({
     success : function(list){
         for(x = 0; x < list.length; x++){
-          console.log(list[x].document);
-          $markets.append('<li> <a href="#">'+'<h2>'
-          + list[x].document.name +'</h2>'+ '<p>' +'Island: '+ list[x].document.island + '<br>Time: ' + list[x].document.time
+          //console.log(list[x].document);
+          $markets.append('<li><a href="#" onclick="marketSetup( ' + '\''+ list[x].document._id + '\'' + ')">'+'<h2>'
+          + list[x].document.name +'</h2>'+ '<p>' +'Island: '+ list[x].document.island
+          + '<br>Time: ' + list[x].document.time
           +'<br>Phone: '+ list[x].document.phone +'</p></a></li>');
           $('#markets').listview().listview('refresh');
             //console.log(list[0].document.name);
@@ -39,36 +20,84 @@ query.find({
     }
 });
 });
-//map function
-$(document).ready(function() {
-  var locations = [
-    ['Ewa Beach', 21.419100, -157.962173],
-    ['Windward Mall', 21.42064035000044, -157.80338967099974],
-    ['Pearl City', 21.393800202000477, -157.96977976199975],
-    ['Salt Lake', 21.34594295700043, -157.90491127999974],
-    ['Haleiwa', 21.58948073400046, -158.10290913599974]
-  ];
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 11,
-    center: new google.maps.LatLng(21.419100, -157.962173),
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  });
-  var infowindow = new google.maps.InfoWindow();
-  var marker, i;
-  for (i = 0; i < locations.length; i++) {
-    marker = new google.maps.Marker({
-      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-      map: map,
-      animation: google.maps.Animation.BOUNCE
-    });
-    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-      return function() {
-        infowindow.setContent(locations[i][0]);
-        infowindow.open(map, marker);
-        $('#map').listview().listview('refresh');
+//Market setup
+function marketSetup(marketID){
+$.mobile.navigate("#market", {transition: "slide", info: "info about the #bar hash"});
+  var marketID = marketID;
+  //$( "#market-title" ).append(marketID);
+  //alert(marketID);
+  var query = new CB.CloudQuery('Market');
+  query.setLimit(1);
+  query.equalTo('id', marketID );
+  query.find({
+      success : function(list){
+          for(x = 0; x < list.length; x++){
+            //console.log(list[x].document);
+            $( "#market-title" ).html(list[x].document.name);
+            $( "#info" ).html(list[x].document.island +'<br>'+ list[x].document.description +'<br>'+ list[x].document.email +'<br>'+ list[x].document.phone);
+            var locations = [
+              ['Ewa Beach', list[x].document.latitude, list[x].document.longitude]
+            ];
+            var map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 11,
+              center: new google.maps.LatLng(list[x].document.latitude, list[x].document.longitude),
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            var infowindow = new google.maps.InfoWindow();
+            var marker, i;
+            for (i = 0; i < locations.length; i++) {
+              marker = new google.maps.Marker({
+                position: new google.maps.LatLng(list[x].document.latitude, list[x].document.longitude),
+                map: map,
+                animation: google.maps.Animation.BOUNCE
+              });
+              google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                  infowindow.setContent(locations[i][1]);
+                  infowindow.open(map, marker);
+                  $('#map').listview().listview('refresh');
+                }
+              })(marker, i));
+            }
+              //console.log(list[0].document.name);
+          }//list is an array of CloudObjects
+
+      },error : function(error){
+          //error
       }
-    })(marker, i));
-  }
+  });
+}
+//Vendors function
+$(document).ready(function() {
+var $vendors = $('#vendors');
+var query = new CB.CloudQuery('Vendor');
+query.setLimit(62);
+query.equalTo('type', 'Lemonade');
+query.find({
+    success : function(list){
+        for(x = 0; x < list.length; x++){
+          //console.log(list[x].document);
+          $vendors.append('<li id="'+ list[x].document._id + '"> <a href="#">'+'<h2>'
+          + list[x].document.name +'</h2>'+ '<p>' +'Type: '+ list[x].document.type
+          + '<br>Description: ' + list[x].document.description +'</p></a></li>');
+          $('#vendors').listview().listview('refresh');
+            //console.log(list[0].document.name);
+        }//list is an array of CloudObjects
+
+    },error : function(error){
+        //error
+    }
+});
+});
+//User navigation
+$(document).ready(function() {
+var currentUser = CB.CloudUser.current;
+if(currentUser.document.type === 'A'){
+  alert('Admin');
+  $( "#nav" ).append('<li><a href="admin.html">Admin</a></li>');
+  $('#nav').listview().listview('refresh');
+}
+
 });
 //function to reset password
 function resetBtn(){
@@ -90,7 +119,7 @@ function resetBtn(){
 //function used to test user login
 function loginValidate(){
   var username = document.getElementById("usrname").value;
-  var password = document.getElementById("pass").value;
+  var password = document.getElementById("password").value;
   if(username === '' & password === ''){
     alert('Enter pass/user');
   }else{
@@ -99,11 +128,12 @@ function loginValidate(){
     user.set('password', password );
     user.logIn({
       success: function(user) {
-        alert('Thats you!');//Login successfull
+        var currentUser = CB.CloudUser.current;
+        alert('Welcome : ' + currentUser.document.username);
       },
       error: function(error) {
         //Error.
-        alert('Wrong!')
+        alert('Sorry, that username or password doesn\'t match')
       }
     });
   }

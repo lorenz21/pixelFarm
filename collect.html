@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cloudboost.io/js-sdk/cloudboost.js"></script>
+<script>CB.CloudApp.init('jjtmvihhhfem', '4a45a86b-ca21-413c-9824-c7ea0abd9e17');</script>
+<script>
+$.ajax({
+  url: 'https://data.hawaii.gov/resource/y5sc-7en2.json',
+  dataType: 'json',
+  type: 'GET',
+  cache: false,
+  success: function(data){
+    $(data).each(function(index, value){
+      if (value.location_1 != null){
+        //console.log('Long' + value.location_1.coordinates[0]);
+        //console.log('Lat' + value.location_1.coordinates[1]);
+      var lat = value.location_1;
+      //console.log(lat.coordinates);
+      var index = new CB.CloudObject('Market');
+      console.log(value.location_1.human_address);
+          
+      /*
+       index.set('name', value.farmer_s_market);
+      index.set('description', value.location_info);
+      index.set('contact', value.contact);
+      index.set('island', value.island);
+      index.set('phone', value.phone);
+      index.set('time', value.time);
+      index.set('email', value.email);
+      index.set('latitude', value.location_1.latitude);
+      index.set('longitude', value.location_1.longitude);
+      index.set('location', value.location_1.human_address);
+      if (value.website != null){
+      index.set('website', value.website.url);
+      var url = value.location_1;
+      console.log(value.website.url);
+      }
+      index.set('monday', value.monday);      
+      index.set('tuesday', value.tuesday);
+      index.set('wednesday', value.wednesday); 
+      index.set('thursday', value.thursday); 
+      index.set('friday', value.friday); 
+      index.set('saturday', value.saturday); 
+      index.set('sunday', value.sunday); 
+      index.save({
+    success : function(obj){
+        console.log(index.id); //a new id is automatically generated.
+    },error : function(error){
+        //object failed to save.
+    }
+  });*/
+
+    }
+
+      //if(value.farmer_s_market != null){
+        //console.log(value.farmer_s_market & value.location_info );
+      //}
+
+    /*
+      
+        index.set('name', value.farmer_s_market);
+        index.set('description', value.location_info);
+        index.set('contact', value.contact);
+        index.set('island', value.island);
+        index.set('phone', value.phone);
+        index.set('time', value.time);
+        index.set('email', value.email);
+        index.save({
+      success : function(obj){
+          console.log(index.id); //a new id is automatically generated.
+      },error : function(error){
+          //object failed to save.
+      }
+    });*/
+
+    });
+
+  }
+});
+</script>
+<script>
+var query = new CB.CloudQuery("Market");
+query.startsWith('name','K');
+query.find({
+  success: function(list) {
+    //list is an array of CloudObjects
+    console.log('works');
+  },
+  error: function(error) {
+  }
+});
+
+console.log(query.selectColumn('name'));
+</script>
+</head>
+<body>
+  <a href="#" id="get-data">Get indexSON data</a>
+      <div id="show-data"></div>
+      <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+</body>
+</html>
