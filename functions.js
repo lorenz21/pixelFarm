@@ -1,7 +1,8 @@
+//Pulls markets from DB
 $(document).ready(function() {
 var $markets = $('#markets');
 var query = new CB.CloudQuery('Market');
-query.setLimit(62);
+query.setLimit(10);
 query.equalTo('island', 'Oahu');
 query.find({
     success : function(list){
@@ -67,17 +68,65 @@ $.mobile.navigate("#market", {transition: "slide", info: "info about the #bar ha
       }
   });
 }
-//Vendors function
+//Vendor setup
+function vendorSetup(vendorID){
+$.mobile.navigate("#vendor", {transition: "slide", info: "info about the #bar hash"});
+  var vendorID = vendorID;
+  //$( "#market-title" ).append(marketID);
+  //alert(marketID);
+  var query = new CB.CloudQuery('Vendor');
+  query.setLimit(1);
+  query.equalTo('id', vendorID );
+  query.find({
+      success : function(list){
+          for(x = 0; x < list.length; x++){
+            //console.log(list[x].document);
+            $( "#vendor-name" ).html(list[x].document.name);
+            $( "#vendor-data" ).html(list[x].document.description);
+            $( "#annoncements" ).html(list[x].document.annoncements);
+            var locations = [
+              ['Ewa Beach', list[x].document.latitude, list[x].document.longitude]
+            ];
+            var map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 11,
+              center: new google.maps.LatLng(list[x].document.latitude, list[x].document.longitude),
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            var infowindow = new google.maps.InfoWindow();
+            var marker, i;
+            for (i = 0; i < locations.length; i++) {
+              marker = new google.maps.Marker({
+                position: new google.maps.LatLng(list[x].document.latitude, list[x].document.longitude),
+                map: map,
+                animation: google.maps.Animation.BOUNCE
+              });
+              google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                  infowindow.setContent(locations[i][1]);
+                  infowindow.open(map, marker);
+                  $('#map').listview().listview('refresh');
+                }
+              })(marker, i));
+            }
+              //console.log(list[0].document.name);
+          }//list is an array of CloudObjects
+
+      },error : function(error){
+          //error
+      }
+  });
+}
+//Get vendors from DB
 $(document).ready(function() {
 var $vendors = $('#vendors');
 var query = new CB.CloudQuery('Vendor');
 query.setLimit(62);
-query.equalTo('type', 'Lemonade');
+query.notEqualTo('name', ' ');
 query.find({
     success : function(list){
         for(x = 0; x < list.length; x++){
           //console.log(list[x].document);
-          $vendors.append('<li id="'+ list[x].document._id + '"> <a href="#">'+'<h2>'
+          $vendors.append('<li> <a href="#" onclick="vendorSetup( ' + '\''+ list[x].document._id + '\'' + ')">'+'<h2>'
           + list[x].document.name +'</h2>'+ '<p>' +'Type: '+ list[x].document.type
           + '<br>Description: ' + list[x].document.description +'</p></a></li>');
           $('#vendors').listview().listview('refresh');
